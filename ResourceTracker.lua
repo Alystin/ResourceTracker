@@ -1,14 +1,14 @@
 -----------------------------------------------------------------------------------------------
--- Client Lua Script for SettlerResourceTracker
+-- Client Lua Script for ResourceTracker
 -- Copyright (c) NCsoft. All rights reserved
 -----------------------------------------------------------------------------------------------
 
 require "Window"
 
 -----------------------------------------------------------------------------------------------
--- SettlerResourceTracker Module Definition
+-- ResourceTracker Module Definition
 -----------------------------------------------------------------------------------------------
-local SettlerResourceTracker = {}
+local ResourceTracker = {}
 
 -----------------------------------------------------------------------------------------------
 -- Constants
@@ -18,7 +18,7 @@ local SettlerResourceTracker = {}
 -----------------------------------------------------------------------------------------------
 -- Initialization
 -----------------------------------------------------------------------------------------------
-function SettlerResourceTracker:new(o)
+function ResourceTracker:new(o)
     o = o or {}
     setmetatable(o, self)
     self.__index = self
@@ -28,7 +28,7 @@ function SettlerResourceTracker:new(o)
     return o
 end
 
-function SettlerResourceTracker:Init()
+function ResourceTracker:Init()
 	local bHasConfigureFunction = false
 	local strConfigureButtonText = ""
 	local tDependencies = {
@@ -39,11 +39,11 @@ end
 
 
 -----------------------------------------------------------------------------------------------
--- SettlerResourceTracker OnLoad
+-- ResourceTracker OnLoad
 -----------------------------------------------------------------------------------------------
-function SettlerResourceTracker:OnLoad()
+function ResourceTracker:OnLoad()
     -- load our form file
-	self.xmlDoc = XmlDoc.CreateFromFile("SettlerResourceTracker.xml")
+	self.xmlDoc = XmlDoc.CreateFromFile("ResourceTracker.xml")
 	self.xmlDoc:RegisterCallback("OnDocLoaded", self)
 
 	-- Define some vars
@@ -59,9 +59,9 @@ function SettlerResourceTracker:OnLoad()
 end
 
 -----------------------------------------------------------------------------------------------
--- SettlerResourceTracker OnDocLoaded
+-- ResourceTracker OnDocLoaded
 -----------------------------------------------------------------------------------------------
-function SettlerResourceTracker:OnDocLoaded()
+function ResourceTracker:OnDocLoaded()
 
 	if self.xmlDoc ~= nil and self.xmlDoc:IsLoaded() then
 	    self.wndMain = Apollo.LoadForm(self.xmlDoc, "SRTForm", nil, self)
@@ -93,41 +93,41 @@ function SettlerResourceTracker:OnDocLoaded()
 end
 
 -----------------------------------------------------------------------------------------------
--- SettlerResourceTracker Functions
+-- ResourceTracker Functions
 -----------------------------------------------------------------------------------------------
 -- Define general functions here
 
 -- on SlashCommand "/srt"
-function SettlerResourceTracker:OnSettlerResourceTrackerOn()
+function ResourceTracker:OnSettlerResourceTrackerOn()
 	self.wndMain:Invoke() -- show the window
 end
 
 -- Saving Stuff
-function SettlerResourceTracker:OnSave(eType)
+function ResourceTracker:OnSave(eType)
 	if eType == GameLib.CodeEnumAddonSaveLevel.Character then
 		return self.zoneItems
 	end
 end
 
 -- Loading Stuff
-function SettlerResourceTracker:OnRestore(eType, tData)
+function ResourceTracker:OnRestore(eType, tData)
 	for k,v in pairs(tData) do
 		self.zoneItems[k] = v
 	end
 end
 
 -- Add an item to the zoneItems table
-function SettlerResourceTracker:RecordItem(item)
+function ResourceTracker:RecordItem(item)
 	self.zoneItems[GameLib.GetCurrentZoneMap().id][item:GetName()] = item:GetItemId()
 end
 
 -- Lookup an item in the zoneItems table
-function SettlerResourceTracker:Contains(item)
+function ResourceTracker:Contains(item)
 	return self.zoneItems[GameLib.GetCurrentZoneMap().id][item:GetName()]
 end
 
 -- Looting an item triggers this
-function SettlerResourceTracker:OnLooted(item, nCount)
+function ResourceTracker:OnLooted(item, nCount)
 	if item:GetItemCategory() == 111 then -- if we have a settler resource item...
 	
 		if self.wndMain:FindChild("NothingHere"):IsVisible(true) then
@@ -188,7 +188,7 @@ function SettlerResourceTracker:OnLooted(item, nCount)
 	end
 end
 
-function SettlerResourceTracker:Refresh()
+function ResourceTracker:Refresh()
 	self.tLoot = {}
 	if self.lootTable then
 		self.lootTable:DeleteAll()
@@ -249,14 +249,14 @@ function SettlerResourceTracker:Refresh()
 end
 
 -- Changing the Zone triggers this
-function SettlerResourceTracker:OnSubZoneChanged(idZone, pszZoneName)
+function ResourceTracker:OnSubZoneChanged(idZone, pszZoneName)
 	self:Refresh()
 end
 -----------------------------------------------------------------------------------------------
 -- SettlerResourceTrackerForm Functions
 -----------------------------------------------------------------------------------------------
 -- when the Cancel button is clicked
-function SettlerResourceTracker:OnCancel()
+function ResourceTracker:OnCancel()
 	self.wndMain:Close() -- hide the window
 end
 
@@ -265,13 +265,13 @@ end
 -- SRTForm Functions
 ---------------------------------------------------------------------------------------------------
 
-function SettlerResourceTracker:RemoveRow(tData)
+function ResourceTracker:RemoveRow(tData)
 	self.test = tData
 	self.zoneItems[GameLib.GetCurrentZoneMap().id][tData:GetCellText(tData:GetCurrentRow(), 1)] = nil
 	self.lootTable:DeleteRow(tData:GetCurrentRow())
 end
 
-function SettlerResourceTracker:OnConfig()
+function ResourceTracker:OnConfig()
 	self.wndConfig:Show(true, true)
 end
 
@@ -279,12 +279,12 @@ end
 -- SRTConfig Functions
 ---------------------------------------------------------------------------------------------------
 
-function SettlerResourceTracker:OnClose()
+function ResourceTracker:OnClose()
 	self.wndConfig:Close()
 end
 
 -----------------------------------------------------------------------------------------------
--- SettlerResourceTracker Instance
+-- ResourceTracker Instance
 -----------------------------------------------------------------------------------------------
-local SettlerResourceTrackerInst = SettlerResourceTracker:new()
+local SettlerResourceTrackerInst = ResourceTracker:new()
 SettlerResourceTrackerInst:Init()
